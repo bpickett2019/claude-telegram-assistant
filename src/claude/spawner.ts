@@ -85,9 +85,9 @@ export class ClaudeSpawner {
       args.push('--model', options.model);
     }
 
-    // Permission mode
-    if (options.permissionMode && options.permissionMode !== 'default') {
-      args.push('--mode', options.permissionMode);
+    // Permission mode - use --dangerously-skip-permissions for bypass/autonomous mode
+    if (options.permissionMode === 'bypass') {
+      args.push('--dangerously-skip-permissions');
     }
 
     // Output format (always text for parsing)
