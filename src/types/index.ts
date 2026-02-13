@@ -8,7 +8,20 @@ export interface SessionState {
   currentProject: string | null;
   permissionMode: PermissionMode;
   model: ClaudeModel;
+  thinkingLevel: ThinkingLevel;
+  verbose: boolean;
+  tokenUsage: TokenUsage;
 }
+
+export interface TokenUsage {
+  totalInput: number;
+  totalOutput: number;
+  sessionInput: number;
+  sessionOutput: number;
+  lastUpdated: string;
+}
+
+export type ThinkingLevel = 'high' | 'medium' | 'low';
 
 export interface Project {
   id: string;
@@ -94,6 +107,8 @@ export interface ClaudeResponse {
   sessionId?: string;
   toolUse?: ToolUse;
   error?: string;
+  tokensIn?: number;
+  tokensOut?: number;
 }
 
 export interface ToolUse {

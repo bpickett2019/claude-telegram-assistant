@@ -38,6 +38,15 @@ export class SessionManager {
         currentProject: null,
         permissionMode: this.config.claude.permissionMode,
         model: this.config.claude.model,
+        thinkingLevel: 'medium',
+        verbose: false,
+        tokenUsage: {
+          totalInput: 0,
+          totalOutput: 0,
+          sessionInput: 0,
+          sessionOutput: 0,
+          lastUpdated: new Date().toISOString(),
+        },
       };
     }
 
@@ -123,5 +132,96 @@ export class SessionManager {
 
     this.state.lastActivity = new Date().toISOString();
     await this.save();
+  }
+
+  /**
+   * Set thinking level
+   */
+  async setThinkingLevel(level: 'high' | 'medium' | 'low'): Promise<void> {
+    if (!this.state) return;
+
+    this.state.thinkingLevel = level;
+    await this.save();
+  }
+
+  /**
+   * Toggle verbose mode
+   */
+  async setVerbose(verbose: boolean): Promise<void> {
+    if (!this.state) return;
+
+    this.state.verbose = verbose;
+    await this.save();
+  }
+
+  /**
+   * Record token usage from a Claude response
+   */
+  async recordUsage(tokensIn: number, tokensOut: number, newSession: boolean = false): Promise<void> {
+    if (!this.state) return;
+
+    // If new session, reset session counters
+    if (newSession) {
+      this.state.tokenUsage.sessionInput = 0;
+      this.state.tokenUsage.sessionOutput = 0;
+    }
+
+    // Update totals
+    this.state.tokenUsage.totalInput += tokensIn;
+    this.state.tokenUsage.totalOutput += tokensOut;
+    this.state.tokenUsage.sessionInput += tokensIn;
+    this.state.tokenUsage.sessionOutput += tokensOut;
+    this.state.tokenUsage.lastUpdated = new Date().toISOString();
+
+    await this.save();
+  }
+
+  /**
+   * Get token usage stats
+   */
+  getTokenUsage(): {
+    input: number;
+    output: number;
+    total: number;
+    sessionInput: number;
+    sessionOutput: number;
+    sessionTotal: number;
+    cost: number;
+    sessionCost: number;
+  } {
+    if (!this.state) {
+      return {
+        input: 0,
+        output: 0,
+        total: 0,
+        sessionInput: 0,
+        sessionOutput: 0,
+        sessionTotal: 0,
+        cost: 0,
+        sessionCost: 0,
+      };
+    }
+
+    const model = this.state.model;
+    const pricing = {
+      opus: { input: 15 / 1_000_000, output: 75 / 1_000_000 },
+      sonnet: { input: 3 / 1_000_000, output: 15 / 1_000_000 },
+      haiku: { input: 0.25 / 1_000_000, output: 1.25 / 1_000_000 },
+    };
+
+    const price = pricing[model];
+    const cost = (this.state.tokenUsage.totalInput * price.input) + (this.state.tokenUsage.totalOutput * price.output);
+    const sessionCost = (this.state.tokenUsage.sessionInput * price.input) + (this.state.tokenUsage.sessionOutput * price.output);
+
+    return {
+      input: this.state.tokenUsage.totalInput,
+      output: this.state.tokenUsage.totalOutput,
+      total: this.state.tokenUsage.totalInput + this.state.tokenUsage.totalOutput,
+      sessionInput: this.state.tokenUsage.sessionInput,
+      sessionOutput: this.state.tokenUsage.sessionOutput,
+      sessionTotal: this.state.tokenUsage.sessionInput + this.state.tokenUsage.sessionOutput,
+      cost,
+      sessionCost,
+    };
   }
 }

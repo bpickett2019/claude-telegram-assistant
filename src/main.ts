@@ -118,7 +118,7 @@ async function main() {
       workspace
     );
 
-    const commandHandler = new CommandHandler(config, session, memory);
+    const commandHandler = new CommandHandler(config, session, memory, skills);
 
     // Initialize cron scheduler
     const sendTelegram = async (message: string) => {
@@ -152,6 +152,33 @@ async function main() {
       const args = ctx.message?.text?.split(' ').slice(1).join(' ');
       await commandHandler.handleMode(ctx, args);
     });
+
+    // Thinking level command with args
+    bot.onCommand('think', async (ctx) => {
+      const args = ctx.message?.text?.split(' ').slice(1).join(' ');
+      await commandHandler.handleThink(ctx, args);
+    });
+
+    // Usage stats command
+    bot.onCommand('usage', (ctx) => commandHandler.handleUsage(ctx));
+
+    // Verbose mode toggle with args
+    bot.onCommand('verbose', async (ctx) => {
+      const args = ctx.message?.text?.split(' ').slice(1).join(' ');
+      await commandHandler.handleVerbose(ctx, args);
+    });
+
+    // Skills management with args
+    bot.onCommand('skills', async (ctx) => {
+      const args = ctx.message?.text?.split(' ').slice(1).join(' ');
+      await commandHandler.handleSkills(ctx, args);
+    });
+
+    // Compact context
+    bot.onCommand('compact', (ctx) => commandHandler.handleCompact(ctx));
+
+    // Ping command
+    bot.onCommand('ping', (ctx) => commandHandler.handlePing(ctx));
 
     // Register project commands
     bot.onCommand('createproject', (ctx) => projects.handleCreateProject(ctx));

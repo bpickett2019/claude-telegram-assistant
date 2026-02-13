@@ -165,9 +165,23 @@ export class SkillsManager {
   }
 
   /**
+   * Get all skills (enabled and disabled)
+   */
+  getAllSkills(): Skill[] {
+    return Array.from(this.skills.values());
+  }
+
+  /**
+   * Get a specific skill by name
+   */
+  getSkill(name: string): Skill | null {
+    return this.skills.get(name) || null;
+  }
+
+  /**
    * Enable a skill
    */
-  enableSkill(name: string): boolean {
+  async enableSkill(name: string): Promise<boolean> {
     const skill = this.skills.get(name);
     if (!skill) return false;
 
@@ -178,7 +192,7 @@ export class SkillsManager {
   /**
    * Disable a skill
    */
-  disableSkill(name: string): boolean {
+  async disableSkill(name: string): Promise<boolean> {
     const skill = this.skills.get(name);
     if (!skill) return false;
 
