@@ -59,14 +59,14 @@ export class MessageHandler {
     // Get session state
     const state = this.session.getState();
 
-    // Spawn Claude
+    // Spawn Claude with bot's codebase as working directory
     const response = await this.spawner.spawn({
       prompt: enrichedPrompt,
       resume: !!state.sessionId,
       sessionId: state.sessionId || undefined,
       model: state.model,
       permissionMode: state.permissionMode,
-      workingDir: this.workspace.getWorkspaceDir(),
+      workingDir: process.cwd(), // Bot's codebase, not workspace
     });
 
     if (response.error) {
@@ -144,7 +144,7 @@ export class MessageHandler {
         sessionId: state.sessionId || undefined,
         model: state.model,
         permissionMode: state.permissionMode,
-        workingDir: this.workspace.getWorkspaceDir(),
+        workingDir: process.cwd(), // Bot's codebase
         imagePath: tempPath,
       });
 
@@ -226,7 +226,7 @@ export class MessageHandler {
         sessionId: state.sessionId || undefined,
         model: state.model,
         permissionMode: state.permissionMode,
-        workingDir: this.workspace.getWorkspaceDir(),
+        workingDir: process.cwd(), // Bot's codebase
       });
 
       if (claudeResponse.error) {
