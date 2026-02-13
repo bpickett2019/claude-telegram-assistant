@@ -20,17 +20,20 @@ export class ClaudeSpawner {
     console.debug(`[Claude] Spawning: ${this.config.claude.path} ${args.join(' ')}`);
 
     try {
+      // Prepare environment - remove CLAUDECODE to allow nested spawning
+      const env = { ...process.env };
+      delete env.CLAUDECODE;
+
+      // Add agent teams flag if enabled
+      if (this.config.agentTeams.enabled) {
+        env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = '1';
+      }
+
       const proc = spawn([this.config.claude.path, ...args], {
         stdout: 'pipe',
         stderr: 'pipe',
         cwd: options.workingDir || this.config.workspace.dir,
-        env: {
-          ...process.env,
-          // Enable agent teams if configured
-          ...(this.config.agentTeams.enabled && {
-            CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1',
-          }),
-        },
+        env,
       });
 
       const stdout = await new Response(proc.stdout).text();

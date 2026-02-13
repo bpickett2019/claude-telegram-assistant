@@ -21,14 +21,16 @@ export class TelegramBot {
    * Setup middleware
    */
   private setupMiddleware(): void {
-    // Security: Only allow configured user
+    // Security: Only allow configured user (if USER_ID is set)
     this.bot.use(async (ctx, next) => {
-      const userId = ctx.from?.id.toString();
+      if (this.allowedUserId) {
+        const userId = ctx.from?.id.toString();
 
-      if (userId !== this.allowedUserId) {
-        console.warn(`[Bot] Unauthorized access attempt from ${userId}`);
-        await ctx.reply('This bot is private.');
-        return;
+        if (userId !== this.allowedUserId) {
+          console.warn(`[Bot] Unauthorized access attempt from ${userId}`);
+          await ctx.reply('This bot is private.');
+          return;
+        }
       }
 
       await next();

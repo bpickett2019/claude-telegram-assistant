@@ -29,7 +29,7 @@ export function loadConfig(): Config {
   return {
     telegram: {
       botToken: required('TELEGRAM_BOT_TOKEN'),
-      userId: required('TELEGRAM_USER_ID'),
+      userId: optional('TELEGRAM_USER_ID'),
     },
     claude: {
       path: optional('CLAUDE_PATH', 'claude'),
@@ -72,7 +72,7 @@ export function validateConfig(config: Config): void {
     throw new Error('Invalid Telegram bot token format');
   }
 
-  if (!config.telegram.userId.match(/^\d+$/)) {
+  if (config.telegram.userId && !config.telegram.userId.match(/^\d+$/)) {
     throw new Error('Invalid Telegram user ID format');
   }
 
