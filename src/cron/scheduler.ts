@@ -177,7 +177,9 @@ REASON: [Why you decided this]
 
     const response = await this.spawner.spawn({
       prompt: enrichedPrompt,
-      workingDir: this.workspace.getWorkspaceDir(),
+      workingDir: process.cwd(), // Bot's codebase for self-modification
+      permissionMode: this.config.claude.permissionMode, // Use bypass mode
+      model: this.config.claude.model, // Use configured model
     });
 
     if (response.error) {
@@ -247,7 +249,9 @@ Keep it brief and actionable. No fluff.
 
     const response = await this.spawner.spawn({
       prompt: enrichedPrompt,
-      workingDir: this.workspace.getWorkspaceDir(),
+      workingDir: process.cwd(), // Bot's codebase for self-modification
+      permissionMode: this.config.claude.permissionMode, // Use bypass mode
+      model: this.config.claude.model, // Use configured model
     });
 
     if (response.error) {
