@@ -188,19 +188,53 @@ export class ProjectHandler {
         gitUrl
       );
 
-      await ctx.reply(
-        `✅ **Project Created**\n\n` +
-        `Name: ${project.name}\n` +
-        `Type: ${project.type}\n` +
-        `ID: \`${project.id}\`\n\n` +
-        `Use \`/switchproject\` to activate it.`,
-        { parse_mode: 'Markdown' }
-      );
-
-      // If git URL provided, TODO: clone it
+      // If git URL provided, clone it
       if (gitUrl) {
+        await ctx.reply('🔄 Cloning repository...');
+
+        try {
+          const { spawn } = await import('bun');
+          const proc = spawn([
+            'git',
+            'clone',
+            gitUrl,
+            project.path
+          ], {
+            stdout: 'pipe',
+            stderr: 'pipe',
+          });
+
+          const exitCode = await proc.exited;
+
+          if (exitCode !== 0) {
+            const errorOutput = await new Response(proc.stderr).text();
+            throw new Error(`Git clone failed: ${errorOutput}`);
+          }
+
+          await ctx.reply(
+            `✅ **Project Created & Cloned**\n\n` +
+            `Name: ${project.name}\n` +
+            `Type: ${project.type}\n` +
+            `Remote: ${gitUrl}\n` +
+            `ID: \`${project.id}\`\n\n` +
+            `Use \`/listprojects\` to switch to it.`,
+            { parse_mode: 'Markdown' }
+          );
+        } catch (error) {
+          await ctx.reply(
+            `⚠️ Project created but git clone failed: ${error}\n\n` +
+            `You can manually clone into: \`${project.path}\``,
+            { parse_mode: 'Markdown' }
+          );
+        }
+      } else {
         await ctx.reply(
-          '⚠️ Git cloning not yet implemented. Project directory created, but repository not cloned.'
+          `✅ **Project Created**\n\n` +
+          `Name: ${project.name}\n` +
+          `Type: ${project.type}\n` +
+          `ID: \`${project.id}\`\n\n` +
+          `Use \`/listprojects\` to switch to it.`,
+          { parse_mode: 'Markdown' }
         );
       }
     } catch (error) {
