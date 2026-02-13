@@ -1,0 +1,35 @@
+{
+  "name": "claude-telegram-assistant",
+  "version": "1.0.0",
+  "description": "Autonomous AI assistant via Telegram powered by Claude Code CLI with Max subscription",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/main.ts",
+    "start": "bun src/main.ts",
+    "build": "bun build src/main.ts --outdir dist --target bun",
+    "setup": "bun scripts/setup.ts",
+    "test:telegram": "bun scripts/test-telegram.ts",
+    "test:supabase": "bun scripts/test-supabase.ts",
+    "test:voice": "bun scripts/test-voice.ts"
+  },
+  "dependencies": {
+    "grammy": "^1.32.0",
+    "@supabase/supabase-js": "^2.47.10",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/node-cron": "^3.0.11",
+    "bun-types": "latest"
+  },
+  "keywords": [
+    "claude",
+    "telegram",
+    "ai-assistant",
+    "autonomous",
+    "claude-code"
+  ],
+  "author": "",
+  "license": "MIT"
+}
