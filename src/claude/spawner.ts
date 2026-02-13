@@ -20,9 +20,10 @@ export class ClaudeSpawner {
     console.debug(`[Claude] Spawning: ${this.config.claude.path} ${args.join(' ')}`);
 
     try {
-      // Prepare environment - remove CLAUDECODE to allow nested spawning
+      // Prepare environment - remove vars that interfere with Max subscription
       const env = { ...process.env };
-      delete env.CLAUDECODE;
+      delete env.CLAUDECODE;           // Allow nested spawning
+      delete env.ANTHROPIC_API_KEY;    // Force Max subscription instead of API credits
 
       // Add agent teams flag if enabled
       if (this.config.agentTeams.enabled) {
