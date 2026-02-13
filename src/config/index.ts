@@ -34,6 +34,7 @@ export function loadConfig(): Config {
     claude: {
       path: optional('CLAUDE_PATH', 'claude'),
       model: (optional('CLAUDE_MODEL', 'opus') as 'opus' | 'sonnet' | 'haiku'),
+      permissionMode: (optional('CLAUDE_PERMISSION_MODE', 'default') as 'default' | 'acceptEdits' | 'plan' | 'bypass'),
     },
     supabase: {
       url: required('SUPABASE_URL'),

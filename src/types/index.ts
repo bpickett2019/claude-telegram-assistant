@@ -110,6 +110,7 @@ export interface Config {
   claude: {
     path: string;
     model: ClaudeModel;
+    permissionMode: PermissionMode;
   };
   supabase: {
     url: string;

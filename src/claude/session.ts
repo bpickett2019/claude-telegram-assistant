@@ -36,7 +36,7 @@ export class SessionManager {
         sessionId: null,
         lastActivity: new Date().toISOString(),
         currentProject: null,
-        permissionMode: 'default',
+        permissionMode: this.config.claude.permissionMode,
         model: this.config.claude.model,
       };
     }
